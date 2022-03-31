@@ -1,75 +1,56 @@
 #include <Servo.h>
 
-Servo ESC;
-int sensorValue;
+Servo ESC1;
+Servo ESC2;
+Servo ESC3;
+char dataReceived[50];
 
 void setup() {
+    // Start the serial monitor on port 9600
     Serial.begin(9600);
-    // pinMode(LED_BUILTIN, OUTPUT);
-    ESC.attach(9, 1000, 2000);
+
+    // Attach all 3 ESCs
+    ESC1.attach(9, 1000, 2000);
+    // ESC2.attach(10, 1000, 2000);
+    // ESC3.attach(11, 1000, 2000);
     
-    Serial.println("0");
-    ESC.write(0);
+    // Calibrate the ESCs by holding 
+    Serial.println("[Starting up...]");
+    ESC1.write(0);
+    // ESC2.write(0);
+    // ESC3.write(0);
     delay(10000);
+    Serial.println("[Ready!]");
+}
+
+// Takes in a value "speed" from 0 to 100 (maps from 0 to 180)
+// and a delay value "del" in milliseconds
+void setMotorSpeed(int speed, int del) {
+    Serial.print("Speed: ");
+    Serial.println(speed);
+    int calcSpeed = map(speed, 0, 100, 0, 180);
+    ESC1.write(calcSpeed);
+    // ESC2.write(calcSpeed);
+    // ESC3.write(calcSpeed);
+    delay(del);
 }
 
 void loop() {
-    // sensorValue = analogRead(A0);
+
+    // NOT FINISHED! Check if Pi has sent any instructions to Arduino and act on them
+    // Idea: from pi to arduino, pass string with the following format:
+    // "[function name] [param 1] [param 2] [...param n]"
+
+    // if (Serial.available() > 0) {   
+    //     String dataReceived = Serial.readStringUntil('\n');
+    //     char *funcHead = strtok(dataReceived, " ");
+    // }
+
+    setMotorSpeed(50, 1000);
+    setMotorSpeed(0, 1000);
+
+    // The below code will eventually be modified for manual override control 
+    // int sensorValue = analogRead(A0);
     // int pwmVal = map(sensorValue, 0, 1023, 0, 180);
-
-    Serial.println("10");
-    ESC.write(10);
-    delay(1000);
-    Serial.println("20");
-    ESC.write(20);
-    delay(1000);
-    Serial.println("30");
-    ESC.write(30);
-    delay(1000);
-    Serial.println("40");
-    ESC.write(40);
-    delay(1000);
-    Serial.println("50");
-    ESC.write(50);
-    delay(1000);
-    Serial.println("60");
-    ESC.write(60);
-    delay(1000);
-    Serial.println("70");
-    ESC.write(70);
-    delay(1000);
-    Serial.println("80");
-    ESC.write(80);
-    delay(1000);
-    Serial.println("90");
-    ESC.write(90);
-    delay(1000);
-    Serial.println("100");
-    ESC.write(100);
-    delay(1000);
-    Serial.println("110");
-    ESC.write(110);
-    delay(1000);
-    Serial.println("120");
-    ESC.write(120);
-    delay(1000);
-    Serial.println("130");
-    ESC.write(130);
-    delay(1000);
-    Serial.println("140");
-    ESC.write(140);
-    delay(1000);
-    Serial.println("150");
-    ESC.write(150);
-    delay(1000);
-    Serial.println("0");
-    ESC.write(0);
-    delay(2000);
-
-    // Serial.print(sensorValue);
-    // Serial.print(" ");
-    // Serial.print(pwmVal);
-    // Serial.println();
-
     // ESC.write(pwmVal);
 }
