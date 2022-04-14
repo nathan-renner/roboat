@@ -6,7 +6,6 @@ Servo ESC3;
 Servo Servo1;
 Servo Servo2;
 Servo Servo3;
-// char dataReceived[50];
 
 void setup() {
     // Start the serial monitor on port 9600
@@ -20,15 +19,15 @@ void setup() {
     Servo2.attach(12);
     Servo3.attach(13);
     
-    // Calibrate the ESCs by holding 0 for 5 seconds.
-    // Calibrate Servos to be at 90 (in the middle)
     Serial.println("[Starting up...]");
-    ESC1.write(0);
-    ESC2.write(0);
-    ESC3.write(0);
+    // Calibrate Servos to be at 90 (in the middle)
     Servo1.write(90);
     Servo2.write(90);
     Servo3.write(90);
+    // Calibrate the ESCs by holding 0 for 5 seconds.
+    ESC1.write(0);
+    ESC2.write(0);
+    ESC3.write(0);
     delay(5000);
     Serial.println("[Ready!]");
 }
@@ -66,23 +65,29 @@ void turnAndSetSpeedWithDelay(int angle, int speed, int del) {
     delay(del);
 }
 
+// Return GPS Coordinats and important IMU data (acceleration)
+void getSensorData() {
+
+}
+
 void loop() {
 
     // NOT FINISHED! Check if Pi has sent any instructions to Arduino and act on them
     // Idea: from pi to arduino, pass string with the following format:
     // "[function name] [param 1] [param 2] [...param n]"
 
-    // if (Serial.available() > 0) {   
-    //     String dataReceived = Serial.readStringUntil('\n');
-    //     char *funcHead = strtok(dataReceived, " ");
-    // }
+    if (Serial.available() > 0) {   
+        String data = Serial.readStringUntil('\n');
+        Serial.print("You sent me: ");
+        Serial.println(data);
+    }
 
 
     // Simulate a turn (timing not accurate)
-    turnAndSetSpeedWithDelay(0, 60, 2000);
-    turnAndSetSpeedWithDelay(30, 50, 2000);
-    turnAndSetSpeedWithDelay(45, 30, 2000);
-    turnAndSetSpeedWithDelay(90, 20, 2000);
-    turnAndSetSpeedWithDelay(45, 30, 2000);
-    turnAndSetSpeedWithDelay(30, 50, 2000);
+    // turnAndSetSpeedWithDelay(0, 60, 2000);
+    // turnAndSetSpeedWithDelay(30, 50, 2000);
+    // turnAndSetSpeedWithDelay(45, 30, 2000);
+    // turnAndSetSpeedWithDelay(90, 20, 2000);
+    // turnAndSetSpeedWithDelay(45, 30, 2000);
+    // turnAndSetSpeedWithDelay(30, 50, 2000);
 }
