@@ -20,7 +20,8 @@
         "/Applications/Arduino.app/Contents/Java/libraries/Servo/src",
         "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/lib/gcc/avr/7.3.0/include",
         "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/lib/gcc/avr/7.3.0/include-fixed",
-        "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include"
+        "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include",
+        "/Users/naterenner/Documents/Arduino/libraries/USB_Host_Shield_Library_2.0"
       ],
       "forcedInclude": [
         "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"

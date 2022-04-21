@@ -1,7 +1,7 @@
 {
-    "port": "/dev/tty.usbmodem13101",
+    "port": "/dev/tty.usbmodem11201",
     "board": "arduino:avr:mega",
     "programmer": "arduino:avrisp",
-    "sketch": "ino/main.ino",
+    "sketch": "ino/boat.ino",
     "configuration": "cpu=atmega2560"
 }

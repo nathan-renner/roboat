@@ -2,7 +2,7 @@
 #include <string.h>
 #include <errno.h>
 
-// #include <wiringSerial.h> (installed on pi)
+#include <wiringSerial.h> // (installed on pi)
 
 using namespace std;
 
