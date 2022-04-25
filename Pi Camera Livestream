@@ -1,0 +1,4 @@
+Make sure ffmpeg is intalled
+Run the command below in the terminal with your stream key
+ffmpeg -re -f s16le -i /dev/zero -f v4l2 -thread_queue_size 512 -codec:v h264 -s 1920x1080 -i /dev/video0 -codec:v copy -acodec aac -ab 128k -g 50 -f flv rtmp://a.rtmp.youtube.com/live2/<Replace with Stream Key>
+
