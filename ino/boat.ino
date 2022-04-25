@@ -86,6 +86,10 @@ void getSensorData() {
 
 }
 
+void readPacket() {
+    
+}
+
 void getManualControlData() {
     xPos = analogRead(VRx);
     yPos = analogRead(VRy);
@@ -115,26 +119,20 @@ void loop() {
 
     // If manual control, listen to radio for commands
     // Else, listen to Pi for commands
-    // if (IS_MANUAL_CONTROL) {
+    if (IS_MANUAL_CONTROL) {
 
-    // } else {
-    //     if (Serial.available() > 0) {   
-    //         String data = Serial.readStringUntil('\n');
-    //         Serial.print("You sent me: ");
-    //         Serial.println(data);
-    //     }
-    // }
+    } else {
+        if (Serial.available() > 0) {   
+            String data = Serial.readStringUntil('\n');
+            Serial.print("You sent me: ");
+            Serial.println(data);
+        }
+    }
 
     getManualControlData();
 
     if (IS_MANUAL_CONTROL) pinMode(LED_BUILTIN, HIGH);
     else pinMode(LED_BUILTIN, LOW);
-    // Serial.print("X: ");
-    // Serial.print(x);
-    // Serial.print(" | Y: ");
-    // Serial.print(y);
-    // Serial.print(" | Angle: ");
-    // Serial.println(angle);
     turn(angle);
     setSpeed(y);
     delay(50);
