@@ -9,18 +9,22 @@ int isManual = 0;
 int prevIsManual = isManual;
 int x = 0;
 int y = 0;
-int angle = 0.0;
+int angle = 0;
+char packet[100] = "";
 
 void setup() {
 
 }
 
 void sendPacket() {
-
+    String payload = "go " + String(x) + " " + String(angle);
+    payload.toCharArray(packet, 100);
+    Serial.write(packet, 100);
+    memset(packet, 0, 100);
 }
 
 void readPacket() {
-
+    
 }
 
 void getManualControlData() {
@@ -44,6 +48,11 @@ void getManualControlData() {
     }
 }
 
-void loop () {
 
+void loop () {
+    if (IS_MANUAL_CONTROL){
+        getManualControlData();
+        sendPacket();
+    }
+    delay(50);
 }
