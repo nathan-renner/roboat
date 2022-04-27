@@ -2,7 +2,7 @@ int VRy = A0;
 int VRx = A1;
 int Btn = 2;
 
-bool IS_MANUAL_CONTROL = false;
+bool IS_MANUAL_CONTROL = true;
 int xPos = 0;
 int yPos = 0;
 int isManual = 0;
@@ -13,19 +13,23 @@ int angle = 0;
 char packet[100] = "";
 
 void setup() {
-
+    Serial.begin(9600);
+    pinMode(VRx, INPUT);
+    pinMode(VRy, INPUT);
+    pinMode(Btn, INPUT_PULLUP); 
 }
 
 void sendPacket() {
-    String payload = "go " + String(x) + " " + String(angle);
-    payload.toCharArray(packet, 100);
-    Serial.write(packet, 100);
-    memset(packet, 0, 100);
+    String payload = "T go " + String(angle) + " " + String(y) + " /";
+//    payload.toCharArray(packet, 100);
+    Serial.print(payload);
+//    Serial.write(packet, 100);
+//    memset(packet, 0, 100);
 }
-
-void readPacket() {
-    
-}
+//
+//void readPacket() {
+//    
+//}
 
 void getManualControlData() {
     xPos = analogRead(VRx);
@@ -41,7 +45,7 @@ void getManualControlData() {
     angle = atan2(y, x) * 180 / PI;
     angle = map(angle, 0, 180, 90, -90);
 
-    if (y <= 0) angle = 0.0;
+    if (y <= 0) angle = 0;
 
     if (prevIsManual == 0 && isManual == 1) {
         IS_MANUAL_CONTROL = !IS_MANUAL_CONTROL;
@@ -50,9 +54,10 @@ void getManualControlData() {
 
 
 void loop () {
-    if (IS_MANUAL_CONTROL){
-        getManualControlData();
-        sendPacket();
-    }
-    delay(50);
+    getManualControlData();
+
+//     if (IS_MANUAL_CONTROL)
+    sendPacket();
+
+    delay(1000);
 }
