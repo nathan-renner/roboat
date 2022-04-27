@@ -20,7 +20,7 @@ void setup() {
 }
 
 void sendPacket() {
-    String payload = "T go " + String(angle) + " " + String(y) + " /";
+    String payload = "T;go;" + String(angle) + ";" + String(y) + ";/";
 //    payload.toCharArray(packet, 100);
     Serial.print(payload);
 //    Serial.write(packet, 100);
@@ -59,5 +59,5 @@ void loop () {
 //     if (IS_MANUAL_CONTROL)
     sendPacket();
 
-    delay(1000);
+    delay(50);
 }
