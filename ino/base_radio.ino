@@ -1,18 +1,3 @@
-/* Simple Ping-Pong for a LoRa Radio/Modem
- *
- * In setup() below please adjust your country specific frequency ranges,
- * as well as the Bandwidth/SpreadingFactor/CodingRate settings.
- *
- * They way this example works is that the device first listens for 5000ms.
- * If it received a "PING" message, it considers itself a SLAVE. If not
- * it considers itself a MASTER. A SLAVE waits for an incoming "PING" message,
- * which it answers with a "PONG" message. A MASTER simply sends periodically
- * every 1000ms) a "PING" message, and collects "PONG" replies while waiting.
- *    
- *    
- * This example code is in the public domain.
- */
- 
 #include "LoRaRadio.h"
 
 #define STATE_NONE        0
