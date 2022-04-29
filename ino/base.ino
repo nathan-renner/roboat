@@ -11,6 +11,7 @@ int x = 0;
 int y = 0;
 int angle = 0;
 char packet[100] = "";
+String man_ctrl;
 
 void setup() {
     Serial.begin(9600);
@@ -20,7 +21,13 @@ void setup() {
 }
 
 void sendPacket() {
-    String payload = "T;go;" + String(angle) + ";" + String(y) + ";/";
+  if (IS_MANUAL_CONTROL){
+    man_ctrl = "T";
+  }
+  else {
+    man_ctrl = "F";
+  }
+    String payload = man_ctrl + ";go;" + String(angle) + ";" + String(y) + ";/";
 //    payload.toCharArray(packet, 100);
     Serial.print(payload);
 //    Serial.write(packet, 100);
