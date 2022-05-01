@@ -15,6 +15,11 @@ float heading[2]; //Magnitude, angle
 
 float marginOfError = 1;
 
+// angle from -90 to 90
+// speed from 0 to 100
+// delay for current command
+void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50);
+
 void turn(string type="WIDE") { //WIDE, SHARP, VERY SHARP (make this a hashmap?)
     float turningAngle = 0;
     if (type == "VERY SHARP") {
@@ -39,3 +44,25 @@ int main() {
 
     }
 }
+
+// Below is the code to communicate to Arduino via USB Serial
+
+// Use "g++ roboat.cpp -lwiringPi" to run. 
+// Don't forget "-lwiringPi" or it won't work.
+// #include <stdio.h>
+// #include <string.h>
+// #include <errno.h>
+// #include <wiringSerial.h>
+
+// int main () {
+//     int fd;
+
+//     if ((fd = serialOpen("/dev/ttyACM0, 9600")) < 0) {
+//         fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
+//         return 1;
+//     }
+//     for (;;) {
+//         putchar(serialGetchar(fd));
+//         fflush(stdout);
+//     }
+// }
