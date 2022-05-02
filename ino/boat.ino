@@ -18,6 +18,7 @@ int y, angle, speed;
 String y_str, angle_str;
 String funcCall = "";
 int num = 0;
+String piMessage = "";
 
 void setup() {
     // Start the serial monitor on port 9600
@@ -58,23 +59,12 @@ void setSpeed(int speed) {
     ESC3.write(speed);
 }
 
-// Sets speed and a delay value "del" in milliseconds
-void setSpeedWithDelay(int speed, int del) {
-    setSpeed(speed);
-    delay(del);
-}
-
 // 0: straight 
 void turn(int angle) {
     angle = map(angle, -90, 90, 0, 180);
     Servo1.write(angle);
     Servo2.write(angle);
     Servo3.write(angle);
-}
-
-void turnWithDelay(int angle, int del) {
-    turn(angle);
-    delay(del);
 }
 
 void turnAndSetSpeedWithDelay(int angle, int speed, int del) {
@@ -96,15 +86,8 @@ void turnAndSetSpeedWithDelay(int angle, int speed, int del) {
 //     memset(gpsCoords, 0, 100);
 // }
 
-void loop() {
-    // Resets values
-    funcCall = y_str = angle_str = boatInstr = "";
-    num = 0;
-
-    Serial.readBytes(remoteInstruc, 100);
-
-    // Tests if received correct command
-    if(remoteInstruc[0] == 'F' || remoteInstruc[0] == 'T') {
+void verifyRadioCommand() {
+  if(remoteInstruc[0] == 'F' || remoteInstruc[0] == 'T') {
       if (remoteInstruc[0] == 'T')
         IS_MANUAL_CONTROL = true;
       else
@@ -117,46 +100,91 @@ void loop() {
         boatInstr += remoteInstruc[i];
       }
     }
-    
-    // Splits received command into function call and params
-    // "[function name] [param 1] [param 2] [...param n]"
-    for (int i=0; i<boatInstr.length(); i++) {
-      if(boatInstr[i] == ';') {
-        num++;
-        i++;
-      }
-      //Serial.println(num);
-      if(num == 0) {
-        funcCall += boatInstr[i];
-      } else if(num == 1){
-          angle_str += boatInstr[i];
-      } else if(num == 2) {
-          y_str += boatInstr[i];
-      } else {
-        break;
-      }
+}
+
+void parseRadioCommand() {
+  for (int i=0; i<boatInstr.length(); i++) {
+    if(boatInstr[i] == ';') {
+      num++;
+      i++;
     }
+    //Serial.println(num);
+    if(num == 0) {
+      funcCall += boatInstr[i];
+    } else if(num == 1){
+        angle_str += boatInstr[i];
+    } else if(num == 2) {
+        y_str += boatInstr[i];
+    } else {
+      break;
+    }
+  }
 
-    // Converts param to int if state changed
-    if (y_str != "")
-      y = y_str.toInt();
-    if (angle_str != "")
-      angle = angle_str.toInt();
+  // Converts param to int if state changed
+  if (y_str != "")
+    y = y_str.toInt();
+  if (angle_str != "")
+    angle = angle_str.toInt();
+}
 
-    // Displays current values
-    Serial.println("=====<>=====");
-    Serial.print("Manual Control: ");
-    Serial.println(IS_MANUAL_CONTROL);
-    Serial.println("Function: " + funcCall);
-    Serial.print("Y: ");
-    Serial.println(y);
-    Serial.print("Angle: ");
-    Serial.println(angle);
-    Serial.println("=====<>=====");
+void displayCurrentValues() {
+  Serial.println("=====<>=====");
+  Serial.print("Manual Control: ");
+  Serial.println(IS_MANUAL_CONTROL);
+  Serial.println("Function: " + funcCall);
+  Serial.print("Y: ");
+  Serial.println(y);
+  Serial.print("Angle: ");
+  Serial.println(angle);
+  Serial.println("=====<>=====");
+}
 
-    // If Manual Control, Execute received command
-    // TODO: Else, listen to pi for command
+void sendPiMessage() {
+  
+}
+
+void readPiMessage() {
+  piMessage = "";
+  if (Serial.available()) {
+    delay(10);
+    while (Serial.available() > 0) {
+      piMessage += (char)Serial.read();
+    }
+    Serial.flush();
+  }
+}
+
+void parsePiMessage() {
+
+}
+
+void loop() {
+    // Resets values
+    funcCall = y_str = angle_str = boatInstr = "";
+    num = 0;
+
+    Serial.readBytes(remoteInstruc, 100);
+
+    // Tests if received correct command
+    verifyRadioCommand();
+    
+    // if true, listen to radio
+    // if false, listen to pi
     if (IS_MANUAL_CONTROL == true) {
-        turnAndSetSpeedWithDelay(angle, y, 50);
+      // Splits received command into function call and params
+      parseRadioCommand();
+      // Displays current values
+      displayCurrentValues();
+
+      turnAndSetSpeedWithDelay(angle, y, 50);
+    } else {
+      // send gps coords and acceleration to pi
+      sendPiMessage();
+      
+      // receive go instruction with speed, angle, and delay
+      readPiMessage();
+      parsePiMessage();
+
+      // turnAndSetSpeedWithDelay(angle, y, delay)
     }
 }
