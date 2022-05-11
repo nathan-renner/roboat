@@ -10,7 +10,7 @@ queue: writeWaypointQueue.o
 	g++ writeWaypointQueue.o -o queue
 
 main.o:
-	g++ -c src/main.cpp
+	g++ -c src/main.cpp -lwiringPi
 
 writeWaypointQueue.o:
 	g++ -c src/writeWaypointQueue.cpp

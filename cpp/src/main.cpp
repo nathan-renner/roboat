@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
+#include "arduinoComms.h"
 
 //#include <wiringPi.h>
 
@@ -28,7 +29,7 @@ double calculateDistance(double currentLoc[2], double nextWaypoint[2]) {
 // angle from -90 to 90
 // speed from 0 to 100
 // delay for current command
-void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50);
+//void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50);
 
 double turn(string type="RESET", string flag="NEGATIVE") { //WIDE, SHARP, VERY SHARP (make this a hashmap?)
     double turningAngle = 0;
