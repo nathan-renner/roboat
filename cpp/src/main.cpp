@@ -10,59 +10,79 @@
 
 using namespace std;
 
-float location[2];
-float heading[2]; //Magnitude, angle
+double location[2];
+double heading[2]; //Magnitude, angle
 
-float marginOfError = 1;
+double turnAngle = 0;
+
+double tempWaypoint[2];
+vector<double[2]> waypoints;
+
+double calculateAngle(double currentLoc[2], double nextWaypoint[2]) {
+    return (atan((currentLoc[0]-nextWaypoint[0])/(currentLoc[1]-nextWaypoint[1]))*180/3.14159265);
+}
+
+double calculateDistance(double currentLoc[2], double nextWaypoint[2]) {
+    return sqrt(((currentLoc[0]-nextWaypoint[0])*(currentLoc[0]-nextWaypoint[0]))+((currentLoc[1]-nextWaypoint[1])*(currentLoc[1]-nextWaypoint[1])));
+}
 
 // angle from -90 to 90
 // speed from 0 to 100
 // delay for current command
 void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50);
 
-void turn(string type="WIDE") { //WIDE, SHARP, VERY SHARP (make this a hashmap?)
-    float turningAngle = 0;
+double turn(string type="RESET", string flag="NEGATIVE") { //WIDE, SHARP, VERY SHARP (make this a hashmap?)
+    double turningAngle = 0;
     if (type == "VERY SHARP") {
         turningAngle = 30;
     } else if (type == "SHARP") {
         turningAngle = 15;
-    } else {
+    } else if (type == "WIDE") {
         turningAngle = 10;
     }
+    if (flag == "NEGATIVE") {
+        turningAngle = turningAngle*-1;
+    }
     //Add code to trigger turning function w/ Arduino
+    turnAndSetSpeedWithDelay(turningAngle, 100-turningAngle);
+    return turningAngle;
 }
 
 int main() {
-    ifstream reader;
-    reader.open("queue.txt");
-    reader.getline(heading, sizeof(heading));
 
+    ifstream reader("queue.txt");
+    reader >> tempWaypoint;
+    waypoints.push_back(tempWaypoint);
+    turnAndSetSpeedWithDelay(0, 100);
+    
     while(true) {
         //Get location and heading from Arduino
         cout << "Location: (" << location[0] << ", " << location[1] << ")" << endl;
         cout << "Heading: " << heading[0] << " at " << heading[1] << " degrees" << endl;
+        cout << "Next waypoint: (" << waypoints[0][0] << ", " << waypoints[0][1] << ")" << endl;
 
+        if (calculateDistance(location, waypoints[0]) <= 0.001) {
+            waypoints.erase(waypoints.begin());
+        }
+
+        if (waypoints.empty()) {
+            turnAndSetSpeedWithDelay(0, 0);
+        }
+        double diff = abs(heading[1]-calculateAngle(location, waypoints[0]));
+        string sign;
+        if (heading[1] > calculateAngle(location, waypoints[0])) {
+            sign = "NEGATIVE";
+        } else {
+            sign = "POSITIVE";
+        }
+        if (diff >= 45) {
+            turnAngle = turn("VERY SHARP", sign);
+        } else if (diff >= 25) {
+            turnAngle = turn("SHARP", sign);
+        } else if (diff >= 5) {
+            turnAngle = turn("WIDE", sign);
+        } else {
+            turn();
+        }
     }
 }
-
-// Below is the code to communicate to Arduino via USB Serial
-
-// Use "g++ roboat.cpp -lwiringPi" to run. 
-// Don't forget "-lwiringPi" or it won't work.
-// #include <stdio.h>
-// #include <string.h>
-// #include <errno.h>
-// #include <wiringSerial.h>
-
-// int main () {
-//     int fd;
-
-//     if ((fd = serialOpen("/dev/ttyACM0, 9600")) < 0) {
-//         fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
-//         return 1;
-//     }
-//     for (;;) {
-//         putchar(serialGetchar(fd));
-//         fflush(stdout);
-//     }
-// }

@@ -1,5 +1,0 @@
-9 lb. of thrust per jet-drive
-Will have coefficient of friction after tow tank 
-Moment of inertia: https://www.boatdesign.net/threads/how-to-calculate-the-moment-of-inertia-for-a-half-ship.
-
-https://openstax.org/books/university-physics-volume-1/pages/10-7-newtons-second-law-for-rotation
