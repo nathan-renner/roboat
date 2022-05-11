@@ -5,8 +5,7 @@
 #include <cmath>
 #include <fstream>
 
-// #include <wiringSerial.h> (installed on pi)
-//Let's add this to our rep
+//#include <wiringPi.h>
 
 using namespace std;
 
@@ -49,13 +48,25 @@ double turn(string type="RESET", string flag="NEGATIVE") { //WIDE, SHARP, VERY S
 }
 
 int main() {
+    //wiringPiSetup();
+    //pinMode(0, OUTPUT); // or use whatever pins we want
+    //pinMode(1, INPUT);
+
+    // ifstream reader;
+    // reader.open("queue.txt");
+    // reader.getline(heading, sizeof(heading));
 
     ifstream reader("queue.txt");
-    reader >> tempWaypoint;
-    waypoints.push_back(tempWaypoint);
+    while (!reader.eof()) {
+        reader >> tempWaypoint[0];
+        reader >> tempWaypoint[1];
+        waypoints.push_back(tempWaypoint);
+    }
     turnAndSetSpeedWithDelay(0, 100);
     
     while(true) {
+        //string comm;
+        //delay(50);
         //Get location and heading from Arduino
         cout << "Location: (" << location[0] << ", " << location[1] << ")" << endl;
         cout << "Heading: " << heading[0] << " at " << heading[1] << " degrees" << endl;

@@ -16,7 +16,8 @@ main() {
             cin >> n[0];
             cout << "Input waypoint y:" << endl;
             cin >> n[1];
-            writer << n;
+            writer << n[0];
+            writer << n[1];
             writer.close();
         }
     }
