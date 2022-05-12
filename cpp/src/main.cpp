@@ -4,7 +4,9 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
-#include "arduinoComms.h"
+
+//#include <wiringPi.h>
+//#include <wiringSerial.h>
 
 //#include <wiringPi.h>
 
@@ -24,6 +26,22 @@ double calculateAngle(double currentLoc[2], double nextWaypoint[2]) {
 
 double calculateDistance(double currentLoc[2], double nextWaypoint[2]) {
     return sqrt(((currentLoc[0]-nextWaypoint[0])*(currentLoc[0]-nextWaypoint[0]))+((currentLoc[1]-nextWaypoint[1])*(currentLoc[1]-nextWaypoint[1])));
+}
+
+void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50) {
+    int fd;
+    string toSend = angle + ";" + speed;
+    if ((fd = serialOpen("/dev/ttyACM0", 9600)) < 0) {
+        fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
+        return;
+    }
+    serialPuts(fd, toSend);
+
+    serialClose(fd);
+}
+
+void getData(double (&location)[2], double (&heading)[2]) {
+    
 }
 
 // angle from -90 to 90
@@ -87,11 +105,11 @@ int main() {
         } else {
             sign = "POSITIVE";
         }
-        if (diff >= 45) {
+        if (diff >= 40) {
             turnAngle = turn("VERY SHARP", sign);
-        } else if (diff >= 25) {
+        } else if (diff >= 20) {
             turnAngle = turn("SHARP", sign);
-        } else if (diff >= 5) {
+        } else if (diff >= 2) {
             turnAngle = turn("WIDE", sign);
         } else {
             turn();
