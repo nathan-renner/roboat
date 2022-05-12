@@ -48,12 +48,12 @@ int angle = 0;
 
 void setup() {
   Serial.begin(115200);
-  ESC1.attach(8, 1000, 2000);
-  ESC2.attach(9, 1000, 2000);
-  ESC3.attach(10, 1000, 2000);
-  Servo1.attach(11);
-  Servo2.attach(12);
-  Servo3.attach(13);
+  ESC1.attach(31, 1000, 2000);
+  ESC2.attach(33, 1000, 2000);
+  ESC3.attach(35, 1000, 2000);
+  Servo1.attach(37);
+  Servo2.attach(39);
+  Servo3.attach(41);
 
     // Serial.println("[Starting up...]");
   // Calibrate Servos to be at 90 (in the middle)
