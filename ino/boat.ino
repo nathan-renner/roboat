@@ -12,7 +12,7 @@ bool IS_MANUAL_CONTROL = false;
 char remoteInstruc[100];
 String boatInstr = "";
 char gpsCoords[100];
-float lat, lon;
+double lat, lon, boatAngle, velocity;
 
 int y, angle, speed;
 String y_str, angle_str;
@@ -139,8 +139,13 @@ void displayCurrentValues() {
   Serial.println("=====<>=====");
 }
 
-void sendPiMessage() {
-  
+void sendPiMessage(string toSend) {
+  if (Serial.available()) {
+    delay(10);
+    while (Serial.available() > 0) {
+      Serial.write(toSend);
+    }
+  }
 }
 
 void readPiMessage() {
@@ -155,7 +160,9 @@ void readPiMessage() {
 }
 
 void parsePiMessage() {
-
+  if (piMessage == "R") {
+    string toSend = (setPrecision(7) << lat) + ";" + (setPrecision(7) << lon) + ";" + (setPrecision(7) << boatAngle) + ";" + (setPrecision(7) << velocity);
+  }
 }
 
 void loop() {
@@ -179,11 +186,11 @@ void loop() {
       turnAndSetSpeedWithDelay(angle, y, 50);
     } else {
       // send gps coords and acceleration to pi
-      sendPiMessage();
       
       // receive go instruction with speed, angle, and delay
       readPiMessage();
       parsePiMessage();
+      sendPiMessage();
 
       // turnAndSetSpeedWithDelay(angle, y, delay)
     }

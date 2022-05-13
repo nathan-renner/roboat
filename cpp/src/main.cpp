@@ -86,22 +86,23 @@ int main() {
 
         if (waypoints.empty()) {
             arduino.turnAndSetSpeedWithDelay(0, 0);
-        }
-        double diff = abs(heading[1]-calculateAngle(location, waypoints[0]));
-        string sign;
-        if (heading[1] > calculateAngle(location, waypoints[0])) {
-            sign = "NEGATIVE";
         } else {
-            sign = "POSITIVE";
-        }
-        if (diff >= 40) {
-            turnAngle = turn("VERY SHARP", sign);
-        } else if (diff >= 20) {
-            turnAngle = turn("SHARP", sign);
-        } else if (diff >= 2) {
-            turnAngle = turn("WIDE", sign);
-        } else {
-            turn();
+            double diff = abs(heading[1]-calculateAngle(location, waypoints[0]));
+            string sign;
+            if (heading[1] > calculateAngle(location, waypoints[0])) {
+                sign = "NEGATIVE";
+            } else {
+                sign = "POSITIVE";
+            }
+            if (diff >= 40) {
+                turnAngle = turn("VERY SHARP", sign);
+            } else if (diff >= 20) {
+                turnAngle = turn("SHARP", sign);
+            } else if (diff >= 2) {
+                turnAngle = turn("WIDE", sign);
+            } else {
+                turn();
+            }
         }
     }
 }

@@ -57,6 +57,7 @@ public:
         int errcode;
         write(port, request.c_str(), sizeof(request.c_str()));
         errcode = read(port, &buffer, sizeof(buffer));
+        tcflush(port, TCIFLUSH);
         buffer_converted = buffer;
         stringstream finder(buffer_converted.substr(0, buffer_converted.find_first_of(";")));
         finder >> location[0];

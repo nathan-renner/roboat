@@ -23,7 +23,7 @@ bool IS_MANUAL_CONTROL = false;
 char remoteInstruc[100];
 String boatInstr = "";
 char gpsCoords[100];
-float lat, lon;
+double lat, lon;
 
 int y, angle, speed;
 String y_str, angle_str;
