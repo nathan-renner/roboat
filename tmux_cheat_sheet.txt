@@ -1,0 +1,10 @@
+tmux
+##Open tmux session
+C-B c
+##Create window
+C-B n
+##Go to next window
+C-B p
+##Go to previous window
+tmux kill-ses
+##Kill session
