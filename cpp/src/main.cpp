@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
+#include "commModule.h"
+
 
 //#include <wiringPi.h>
 //#include <wiringSerial.h>
@@ -11,6 +13,8 @@
 //#include <wiringPi.h>
 
 using namespace std;
+
+commModule arduino = commModule();
 
 double location[2];
 double heading[2]; //Magnitude, angle
@@ -26,22 +30,6 @@ double calculateAngle(double currentLoc[2], double nextWaypoint[2]) {
 
 double calculateDistance(double currentLoc[2], double nextWaypoint[2]) {
     return sqrt(((currentLoc[0]-nextWaypoint[0])*(currentLoc[0]-nextWaypoint[0]))+((currentLoc[1]-nextWaypoint[1])*(currentLoc[1]-nextWaypoint[1])));
-}
-
-void turnAndSetSpeedWithDelay(int angle, int speed, int delay = 50) {
-    int fd;
-    string toSend = angle + ";" + speed;
-    if ((fd = serialOpen("/dev/ttyACM0", 9600)) < 0) {
-        fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
-        return;
-    }
-    serialPuts(fd, toSend);
-
-    serialClose(fd);
-}
-
-void getData(double (&location)[2], double (&heading)[2]) {
-    
 }
 
 // angle from -90 to 90
@@ -62,7 +50,7 @@ double turn(string type="RESET", string flag="NEGATIVE") { //WIDE, SHARP, VERY S
         turningAngle = turningAngle*-1;
     }
     //Add code to trigger turning function w/ Arduino
-    turnAndSetSpeedWithDelay(turningAngle, 100-turningAngle);
+    arduino.turnAndSetSpeedWithDelay(turningAngle, 100-turningAngle);
     return turningAngle;
 }
 
@@ -81,12 +69,13 @@ int main() {
         reader >> tempWaypoint[1];
         waypoints.push_back(tempWaypoint);
     }
-    turnAndSetSpeedWithDelay(0, 100);
+    arduino.turnAndSetSpeedWithDelay(0, 100);
     
     while(true) {
         //string comm;
         //delay(50);
         //Get location and heading from Arduino
+        arduino.getData(location, heading);
         cout << "Location: (" << location[0] << ", " << location[1] << ")" << endl;
         cout << "Heading: " << heading[0] << " at " << heading[1] << " degrees" << endl;
         cout << "Next waypoint: (" << waypoints[0][0] << ", " << waypoints[0][1] << ")" << endl;
@@ -96,7 +85,7 @@ int main() {
         }
 
         if (waypoints.empty()) {
-            turnAndSetSpeedWithDelay(0, 0);
+            arduino.turnAndSetSpeedWithDelay(0, 0);
         }
         double diff = abs(heading[1]-calculateAngle(location, waypoints[0]));
         string sign;
