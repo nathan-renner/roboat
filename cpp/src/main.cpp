@@ -69,6 +69,11 @@ int main() {
         reader >> tempWaypoint[1];
         waypoints.push_back(tempWaypoint);
     }
+    char flag = 'N';
+    while (flag != 'K') {
+        flag = arduino.start();
+    }
+
     arduino.turnAndSetSpeedWithDelay(0, 100);
     
     while(true) {

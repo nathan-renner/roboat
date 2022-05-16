@@ -1,16 +1,28 @@
 objects = *.o
-binaries = navloop queue
+binaries = navloop queue testMotors testGPS
 
-all: navloop queue
+all: navloop queue testMotors testGPS
 
 navloop: main.o
-	g++ main.o -o navloop -lwiringPi -lwiringPiDev -lpthread -lm
+	g++ main.o -o navloop
 
 queue: writeWaypointQueue.o
 	g++ writeWaypointQueue.o -o queue
 
+testMotors: testMotors.o
+	g++ testMotors.o -o testMotors
+
+testGPS: testGPS.o
+	g++ testGPS.o -o testGPS
+
 main.o:
 	g++ -c src/main.cpp -lwiringPi -lwiringPiDev -lpthread -lm
+
+testGPS.o:
+	g++ -c src/testGPS.cpp -lwiringPi -lwiringPiDev -lpthread -lm
+
+testMotors.o:
+	g++ -c src/testMotors.cpp -lwiringPi -lwiringPiDev -lpthread -lm
 
 writeWaypointQueue.o:
 	g++ -c src/writeWaypointQueue.cpp

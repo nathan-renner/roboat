@@ -145,6 +145,7 @@ void sendPiMessage(string toSend) {
     while (Serial.available() > 0) {
       Serial.write(toSend);
     }
+    Serial.flush();
   }
 }
 

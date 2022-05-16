@@ -50,6 +50,14 @@ public:
         write(port, toSend.c_str(), sizeof(toSend.c_str()));
     }
 
+    char start() {
+        string toSend = "K";
+        char toReturn;
+        write(port, toSend.c_str(), sizeof(toSend.c_str()));
+        read(port, &toReturn, sizeof(toReturn));
+        return toReturn;
+    }
+
     int getData(double (&location)[2], double (&heading)[2]) {
         string request = "R"; //For "Requesting"
         string buffer_converted;
