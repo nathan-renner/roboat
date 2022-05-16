@@ -16,19 +16,19 @@ using namespace std;
 
 commModule arduino = commModule();
 
-double location[2];
-double heading[2]; //Magnitude, angle
+double location[2] = {0, 0};
+double heading[2] = {0, 0}; //Magnitude, angle
 
 double turnAngle = 0;
 
-double tempWaypoint[2];
-vector<double[2]> waypoints;
+vector<double> tempWaypoint;
+vector<vector<double>> waypoints;
 
-double calculateAngle(double currentLoc[2], double nextWaypoint[2]) {
+double calculateAngle(double currentLoc[2], vector<double> nextWaypoint) {
     return (atan((currentLoc[0]-nextWaypoint[0])/(currentLoc[1]-nextWaypoint[1]))*180/3.14159265);
 }
 
-double calculateDistance(double currentLoc[2], double nextWaypoint[2]) {
+double calculateDistance(double currentLoc[2], vector<double> nextWaypoint) {
     return sqrt(((currentLoc[0]-nextWaypoint[0])*(currentLoc[0]-nextWaypoint[0]))+((currentLoc[1]-nextWaypoint[1])*(currentLoc[1]-nextWaypoint[1])));
 }
 
@@ -63,7 +63,7 @@ int main() {
     // reader.open("queue.txt");
     // reader.getline(heading, sizeof(heading));
 
-    ifstream reader("queue.txt");
+    ifstream reader("../data/queue.txt");
     while (!reader.eof()) {
         reader >> tempWaypoint[0];
         reader >> tempWaypoint[1];
@@ -77,9 +77,9 @@ int main() {
     arduino.turnAndSetSpeedWithDelay(0, 100);
     
     while(true) {
-        //string comm;
-        //delay(50);
-        //Get location and heading from Arduino
+        // string comm;
+        // delay(50);
+        // Get location and heading from Arduino
         arduino.getData(location, heading);
         cout << "Location: (" << location[0] << ", " << location[1] << ")" << endl;
         cout << "Heading: " << heading[0] << " at " << heading[1] << " degrees" << endl;

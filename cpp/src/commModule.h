@@ -58,7 +58,7 @@ public:
         return toReturn;
     }
 
-    int getData(double (&location)[2], double (&heading)[2]) {
+    int getData(double location[2], double heading[2]) {
         string request = "R"; //For "Requesting"
         string buffer_converted;
         char buffer[39];
