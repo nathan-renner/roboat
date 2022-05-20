@@ -61,7 +61,7 @@ void sendPacket() {
   else {
     man_ctrl = "F";
   }
-    String payload = man_ctrl + ";go;" + String(angle) + ";" + String(y) + ";/";
+    String payload = "S" + man_ctrl + ";go;" + String(angle) + ";" + String(y) + ";/";
 //    payload.toCharArray(packet, 100);
     Serial.print(payload);
 //    Serial.write(packet, 100);
@@ -69,6 +69,12 @@ void sendPacket() {
 }
 
 void getPs4Data() {
+  if (PS4.getButtonClick(TRIANGLE)){ // This turns manual control on or off
+    IS_MANUAL_CONTROL = !IS_MANUAL_CONTROL;  
+  }
+    if (PS4.getButtonClick(SQUARE)){ // This limits the maximum speed to 50%
+    limit = !limit;  
+  }
   yPos = PS4.getAnalogHat(LeftHatY);
   if (yPos > 126) yPos = 126;
   xPos = PS4.getAnalogHat(RightHatX);
@@ -80,22 +86,27 @@ void getPs4Data() {
   
   angle = map(xPos, 0, 255, -90, 90);
 
-  //angle = atan2(y, x) * 180 / PI;
-  //angle = map(angle, 0, 180, 90, -90);
-  if (PS4.getButtonClick(TRIANGLE)){ // This turns manual control on or off
-    IS_MANUAL_CONTROL = !IS_MANUAL_CONTROL;  
-  }
-    if (PS4.getButtonClick(SQUARE)){ // This limits the maximum speed to 50%
-    limit = !limit;  
-  }
   
 }
+
+
 void loop() {
   Usb.Task();
 
   if (PS4.connected()) {
     getPs4Data();
     sendPacket();
+    //This Sets the PS4 Led to indicate whether manual control is on or off and whether the max is velocity is set to 50%
+    if (IS_MANUAL_CONTROL && limit) {
+      PS4.setLed(Yellow);
+    }
+    else if(IS_MANUAL_CONTROL) {
+      PS4.setLed(Blue);
+    }
+    else {
+      PS4.setLed(Red);
+    }
+    
     delay(50);
 
   }
