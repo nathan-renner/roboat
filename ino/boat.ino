@@ -1,9 +1,22 @@
+#include <BufferedInput.h>
+#include <BufferedOutput.h>
+#include <loopTimer.h>
+#include <millisDelay.h>
+#include <PinFlasher.h>
+#include <SafeString.h>
+#include <SafeStringNameSpace.h>
+#include <SafeStringNameSpaceEnd.h>
+#include <SafeStringNameSpaceStart.h>
+#include <SafeStringReader.h>
+#include <SafeStringStream.h>
+#include <SerialComs.h>
+
 #include <Servo.h>
 #include <TinyGPSPlus.h>
 #include "Waveshare_10Dof-D.h"
 
 
-#define Led 3
+#define csf createSafeString 
 Servo ESC1;
 Servo ESC2;
 Servo ESC3;
@@ -13,48 +26,46 @@ Servo Servo3;
 
 //variables for voltage sensor
 
-/*float adc_voltage = 0.0;
-float in_voltage = 0.0;
 
-float ref_voltage = 14.8;
-
-int R1, R2;
-
-int adc_value = 0;*/
 
 TinyGPSPlus gps;
 
 bool IS_MANUAL_CONTROL = false;
 char remoteInstruc[100];
-String dataForPi;
-String boatInstr = "";
+
+
+
+csf(boatInstr, 20, "");
+csf(dataForPi, 20, "");
 char voltage[10];
 double lat, lon, vel, yaw, dir;
 
 int y, angle, speed;
-String y_str, angle_str;
-String funcCall = "";
-String readings = "";
+
+csf(y_str, 3, "");
+csf(angle_str, 3, "");
+csf(funcCall, 3, "");
 int num = 0;
-String piMessage = "";
+//String piMessage = "";
+csf(piMessage, 20, "");
 
 void setup() {
-    pinMode(Led, OUTPUT);
+ 
 
     // Start the serial monitor on port 9600
     Serial.begin(9600);
-    Serial1.begin(115200);
-    Serial2.begin(9600);
+    Serial2.begin(115200);
+    //Serial2.begin(9600);
     Serial3.begin(9600);
     //pinMode(LED_BUILTIN, OUTPUT);
 
     // Attach all 3 ESCs
-    ESC1.attach(31, 1000, 2000);
-    ESC2.attach(33, 1000, 2000);
-    ESC3.attach(35, 1000, 2000);
-    Servo1.attach(37);
-    Servo2.attach(39);
-    Servo3.attach(41);
+    ESC1.attach(46, 1000, 2000);
+    ESC2.attach(48, 1000, 2000);
+    ESC3.attach(50, 1000, 2000);
+    Servo1.attach(47);
+    Servo2.attach(49);
+    Servo3.attach(51);
     
     // Serial.println("[Starting up...]");
     // Calibrate Servos to be at 90 (in the middle)
@@ -84,13 +95,7 @@ void setSpeed(int speed) {
     ESC2.write(speed);
     ESC3.write(speed);
 }
-/*void readVoltage() {
-  adc_value = analogRead(A0);
 
-  adc_voltage = (adc_value*ref_voltage)/1024;
-
-  in_voltage = adc_voltage/(R2/(R1+R2));
-}*/
 // Sets speed and a delay value "del" in milliseconds
 void setSpeedWithDelay(int speed, int del) {
     setSpeed(speed);
@@ -99,7 +104,7 @@ void setSpeedWithDelay(int speed, int del) {
 
 // 0: straight 
 void turn(int angle) {
-    angle = map(angle, -90, 90, 45, 135);
+    angle = map(angle, -90, 90, 65, 115);
     Servo1.write(angle + 4);
     Servo2.write(angle + 5);
     Servo3.write(angle + 5);
@@ -117,28 +122,19 @@ void turnAndSetSpeedWithDelay(int angle, int speed, int del) {
 }
 
 // Return GPS Coordinats and important IMU data (acceleration)
-void getGPSData() {
+String getGPSData() {
+    String dataForPi = "";
     lat = gps.location.lat();
     lon = gps.location.lng();
     vel = gps.speed.kmph();
     dir = gps.course.deg();
     dataForPi += String(lat, 7) + ";" + String(lon, 7) + ";" + String(vel, 7) + ";" + String(dir, 7);
-    IMU_ST_ANGLES_DATA stAngles;
-    IMU_ST_SENSOR_DATA stGyroRawData;
-    IMU_ST_SENSOR_DATA stAccelRawData;
-    IMU_ST_SENSOR_DATA stMagnRawData;
-    imuDataGet( &stAngles, &stGyroRawData, &stAccelRawData, &stMagnRawData);
-    yaw = stAngles.fRoll;
+
+    return dataForPi;
     
     
 }
 
-// void sendPacket() {
-//     String payload = String(lat) + " " + String(lon);
-//     payload.toCharArray(gpsCoords, 100);
-//     Serial1.write(gpsCoords, 100);
-//     memset(gpsCoords, 0, 100);
-// }
 
 void sendPiMessage(String toSend) {
   if (Serial.available()) {
@@ -162,15 +158,16 @@ void readPiMessage() {
 
 void parsePiMessage() {
   if (piMessage == "R") {
-    //String toSend = (setPrecision(7) << lat) + ";" + (setPrecision(7) << lon) + ";" + (setPrecision(7) << boatAngle) + ";" + (setPrecision(7) << velocity);
-    sendPiMessage(dataForPi);
+    sendPiMessage(getGPSData());
     dataForPi = "";
   }
 }
 void loop() {
+
     // Resets values
     funcCall = y_str = angle_str = boatInstr = "";
     num = 0;
+    
 
     //delay(50);
     readPiMessage();
@@ -179,9 +176,25 @@ void loop() {
       Serial.write('K');
     }
     
-    //if(Serial2.available())
+    
+    
+    if(Serial2.available() > 5) {
+      while (1) {
+        if (Serial2.read() == 'S') {
+          break;
+        }
+      }
+      //Serial2.readBytes(remoteInstruc, 40);
+      Serial2.readBytesUntil("/", remoteInstruc, 20);
+
+    } else {
+      y = 0;
+      angle = 0;
+    }
       
-    Serial2.readBytes(remoteInstruc, 100);
+
+
+    //Serial.println("Read radio instructions");
     
     
 
@@ -199,6 +212,7 @@ void loop() {
         boatInstr += remoteInstruc[i];
       }
     }
+    Serial.println(boatInstr);
 
     //If manual control is true it receives instruction from base station. Else, it receives instructions from the pi
     if (IS_MANUAL_CONTROL) {
@@ -244,29 +258,24 @@ void loop() {
         parsePiMessage();      
     }
 
+ 
 
     // Converts param to int if state changed
     if (y_str != "")
-      y = y_str.toInt();
+      y_str.toInt(y);
     if (angle_str != "")
-      angle = angle_str.toInt();
+      angle_str.toInt(angle);
 
-    // Displays current values
-    /*Serial.println("=====<>=====");
-    Serial.print("Manual Control: ");
-    Serial.println(IS_MANUAL_CONTROL);
-    Serial.println("Function: " + funcCall);
-    Serial.print("Y: ");
-    Serial.println(y);
-    Serial.print("Angle: ");
-    Serial.println(angle);
-    Serial.println("=====<>=====");*/
-    getGPSData();
+
+    
+    
     
 
      
 
 
-    turnAndSetSpeedWithDelay(angle, y, 0);
+    turnAndSetSpeedWithDelay(angle, y, 50);
+
+
     
 }
